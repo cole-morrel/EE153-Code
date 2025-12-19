@@ -1,0 +1,11 @@
+Repository contains code for ESP32-C3-WROOM-02 based autonomous temperature 
+sensor. Code is formatted in structure of four custom importable "libraries" and
+main file responsible for implementing high level program logic. Libraries 
+include 'mqtt_comms,' 'store_flash,' 'temp_sensor,' and 'minimal_wifi.' These
+libraries are located in the ./lib folder (as is standard for PlatformIO 
+projects) with each containing a header file and source file. The main source
+file for the program is located in the ./src directory and includes the 
+previously mentioned libraries (in order to handle the different technical 
+aspects of the program), while the main.c file is mostly responsible for 
+implementing the higher level logic and state machine used to determine what 
+task gets executed by the device on startup.

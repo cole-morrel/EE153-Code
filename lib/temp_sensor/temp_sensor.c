@@ -1,6 +1,7 @@
 #include "temp_sensor.h"
 
 i2c_master_dev_handle_t init_i2c(void) {
+    // Set up config struct
     i2c_master_bus_config_t i2c_mst_config = {
         .clk_source = I2C_CLK_SRC_DEFAULT,
         .i2c_port = I2C_PORT,
@@ -10,6 +11,7 @@ i2c_master_dev_handle_t init_i2c(void) {
         .flags.enable_internal_pullup = true,
     };
 
+    // Other initialization
     i2c_master_bus_handle_t bus_handle;
     ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
 
@@ -32,7 +34,7 @@ i2c_master_dev_handle_t init_i2c(void) {
 double get_temp(i2c_master_dev_handle_t dev_handle) {
     uint8_t receive_buf[READ_DATA_LENGTH];
 
-    // Initiate One shot reading
+    // Initiate one-shot reading
     ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, (const uint8_t*)config_register_message, 3, -1));
     
     // Switch to temperature register and read data out
@@ -51,10 +53,6 @@ double outputToDecimal(uint8_t binary_data[2], uint8_t decimal_length) {
     uint8_t byte2 = binary_data[1];
     uint8_t sign = byte1 >> 7;
     uint8_t bitmask = 0x01;
-
-    for (int i = 0; i < 8; i++) {
-        uint8_t result = bitmask & (byte1 >> (7 - i));
-    }
 
     uint8_t byte2_array[decimal_length];
     for (int i = 0; i < decimal_length; i++) {

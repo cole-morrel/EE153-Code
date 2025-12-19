@@ -71,7 +71,6 @@ void app_main() {
 
         // Connect to MQTT
         volatile mqtt_context_t mqtt_time = 0;
-        
         esp_mqtt_client_handle_t client = mqtt_app_start(&mqtt_time);
 
         // Get RSSI
@@ -81,10 +80,12 @@ void app_main() {
         double batch_temperatures[BATCH_SIZE - 1];
         int temperature_status = read_temperature(flash_handle, batch_temperatures);
 
+        // Get time from MQTT
         while (mqtt_time == 0) {} // Spin loop until get update of time from server
         int64_t curr_time = (int64_t)mqtt_time;
         ESP_LOGI(TAG_MAIN, "curr_time from MQTT: %" PRId64, curr_time);
 
+        // Read batched data (only continue with send if correct number of datapoints retreived)
         if (temperature_status == 1 || temperature_status == 2) {
             ESP_LOGE(TAG_MAIN, "Bad batch measurement read. No data sent.");
         } else if (temperature_status == 0) {
@@ -106,7 +107,7 @@ void app_main() {
             publish_data(0, 0, rssi, batch_temp_time, BATCH_SIZE, client);
         }        
 
-        // Store data in flash
+        // reset counter value in flash
         int new_counter = 0;
         write_counter(flash_handle, new_counter);
         commit_and_close(flash_handle);

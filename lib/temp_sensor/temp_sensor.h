@@ -10,6 +10,7 @@
 #include "nvs_flash.h"
 #include "esp_netif.h"
 
+// Define constant values
 #define I2C_PORT -1
 #define I2C_SCL 7
 #define I2C_SDA 6
@@ -25,6 +26,7 @@
 #define MAX_TEMP 127.9375
 #define MIN_TEMP -128.0
 
+// Messages used for configuration
 static const uint8_t config_register_message[3] = {0x01, CONFIGURATION_MESSAGE_BYTE1, CONFIGURATION_MESSAGE_BYTE2};
 static const uint8_t config_low_limit_message[3] = {0x02, LOW_LIMIT_BYTE1, LOW_LIMIT_BYTE2};
 static const uint8_t config_high_limit_message[3] = {0x03, HIGH_LIMIT_BYTE1, HIGH_LIMIT_BYTE2};

@@ -29,6 +29,7 @@ int read_counter(nvs_handle_t my_handle) {
     int32_t read_counter;
     ESP_LOGI(TAG_FLASH, "\nReading counter from NVS...");
     err = nvs_get_i32(my_handle, "counter", &read_counter);
+    // Check if counter read successful
     switch (err) {
         case ESP_OK:
             ESP_LOGI(TAG_FLASH, "Read counter = %" PRIu32, read_counter);
@@ -49,6 +50,7 @@ int read_counter(nvs_handle_t my_handle) {
 
 void write_counter(nvs_handle_t my_handle, int counter_val) {
     esp_err_t err2 = nvs_set_i32(my_handle, "counter", (int32_t)counter_val);
+    // Check if counter write successful
     if (err2 != ESP_OK) {
         ESP_LOGE(TAG_FLASH, "Failed to write counter!");
     } else {
@@ -57,29 +59,19 @@ void write_counter(nvs_handle_t my_handle, int counter_val) {
 }
 
 void write_temperature(nvs_handle_t my_handle, int index, double temperature) {
+    // Get key to store value at
     char key[7];
     sprintf(key, "temp%d", index);
     
+    // Scale 4 decimal point float to integer
     int32_t temperature_int = (int32_t)(temperature * 10000);
 
+    // Check if temperature write successful
     esp_err_t err2 = nvs_set_i32(my_handle, key, temperature_int);
     if (err2 != ESP_OK) {
         ESP_LOGE(TAG_FLASH, "Failed to write temperature!");
     } else {
         ESP_LOGI(TAG_FLASH, "Wrote temperature %" PRIu32, temperature_int);
-    }
-}
-
-void write_time(nvs_handle_t my_handle, int index, int64_t time) {
-    char key[7];
-    sprintf(key, "time%d", index);
-    
-
-    esp_err_t err = nvs_set_i64(my_handle, key, time);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG_FLASH, "Failed to write time!");
-    } else {
-        ESP_LOGI(TAG_FLASH, "Wrote time %" PRIi64, time);
     }
 }
 
@@ -106,15 +98,17 @@ void commit_and_close(nvs_handle_t my_handle) {
 int read_temperature(nvs_handle_t my_handle, double *buffer) {
     esp_err_t err;
     
-    // Read Temperature
+    // Iterate over batched values
     for (int i = 0; i < (BATCH_SIZE - 1); i++) {
         
+        // get key to read value from
         char key[7];
         sprintf(key, "temp%d", i);
         
         int32_t temperature_val;
 
         ESP_LOGI(TAG_FLASH, "\nReading temp%d from NVS...", i);
+        // Check if temperature read successful
         err = nvs_get_i32(my_handle, key, &temperature_val);
         switch (err) {
             case ESP_OK:
@@ -127,17 +121,17 @@ int read_temperature(nvs_handle_t my_handle, double *buffer) {
                 ESP_LOGW(TAG_FLASH, "The value is not initialized yet!");
                 temperature_val = 0;
 
-                return 1;
+                return 1; // Return error type 1
 
                 break;
             default:
                 ESP_LOGE(TAG_FLASH, "Error (%s) reading!", esp_err_to_name(err));
                 temperature_val = 0;
 
-                return 2;
+                return 2; // Return error type 2
         }
     }
 
-    return 0;
+    return 0; // Return no error
 
 }
